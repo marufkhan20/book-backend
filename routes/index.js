@@ -4,4 +4,5 @@ module.exports = {
   bookRoutes: require("./bookRoutes"),
   orderRoutes: require("./orderRoutes"),
   userRoutes: require("./userRoutes"),
+  paymentRoutes: require("./paymentRoutes"),
 };

@@ -1,6 +1,8 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const sendMail = require("../services/emailService");
+const emailTemplate = require("../services/emailTemplate");
 
 // register controller
 const registerController = async (req, res) => {
@@ -36,9 +38,22 @@ const registerController = async (req, res) => {
           password: hash,
         });
 
-        let user = await newUser.save();
+        await newUser.save();
 
-        res.status(201).json(user);
+        if (newUser?._id) {
+          // send verification email
+          const verifyLink = `${process.env.SITE_URL}/verify-account/${newUser._id}`;
+          // const verifyLink = "https://youtube.com";
+
+          sendMail({
+            from: process.env.ADMIN_EMAIL,
+            to: email,
+            subject: "Verify Your Account.",
+            html: emailTemplate(verifyLink),
+          });
+        }
+
+        res.status(201).json(newUser);
       });
     });
   } catch (err) {
@@ -79,6 +94,14 @@ const loginController = async (req, res) => {
       });
     }
 
+    if (!user?.verified) {
+      return res.status(400).json({
+        error: {
+          logEmail: "Please verify your account!!",
+        },
+      });
+    }
+
     // prepare the user object to generate token
     const userObject = {
       _id: user._id,
@@ -100,7 +123,26 @@ const loginController = async (req, res) => {
   });
 };
 
+// verify account controller
+const verifyAccountController = async (req, res) => {
+  try {
+    const { id } = req.params || {};
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $set: { verified: true } },
+      { new: true }
+    );
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "Server error occurred!!",
+    });
+  }
+};
+
 module.exports = {
   registerController,
   loginController,
+  verifyAccountController,
 };

@@ -33,7 +33,7 @@ const getBookController = async (req, res) => {
 // create new Book controller
 const createNewBookController = async (req, res) => {
   try {
-    const { title, price, stock, bookImage, category, description } =
+    const { title, price, stock, bookImage, category, description, featured } =
       req.body || {};
 
     // upload book image
@@ -68,6 +68,7 @@ const createNewBookController = async (req, res) => {
       bookImage: `/storage/books/${imagePath}`,
       category,
       description,
+      featured,
     });
     await newBook.save();
     res.status(200).json(newBook);

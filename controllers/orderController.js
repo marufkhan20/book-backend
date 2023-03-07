@@ -4,6 +4,8 @@ const pdfMake = require("pdfmake");
 const pdf = require("html-pdf");
 const jsPDF = require("jspdf");
 const PDFDocument = require("pdfkit");
+const sendMail = require("../services/emailService");
+const orderTemplate = require("../services/orderTemplate");
 
 const stripe = require("stripe")(
   "sk_test_51LRnDyH3L9RCLevZoGrUbNqVAl445o6nt2MVPw8bwOyvYbJbQV5AKDsQ2Hj4XEG2Mhz6aiYtMZpj8KryafbcZVue00ebStF5jd"
@@ -41,8 +43,10 @@ const getAllOrdersByUserController = async (req, res) => {
 // create new order controller
 const createNewOrderController = async (req, res) => {
   try {
-    const { totalPrice, totalQty, books, stripeToken } = req.body || {};
-    const { _id } = req.user || {};
+    const { totalPrice, totalQty, books, stripeToken, order } = req.body || {};
+    const { _id, firstName, lastName, email } = req.user || {};
+
+    console.log("order", order);
 
     // create new order
     const newOrder = new Order({
@@ -67,6 +71,18 @@ const createNewOrderController = async (req, res) => {
       // if (payment) {
       // update user data
       await User.findByIdAndUpdate(_id, { $set: req.body });
+
+      // send email
+      sendMail({
+        from: process.env.ADMIN_EMAIL,
+        to: email,
+        subject: "Your order confirmation email.",
+        html: orderTemplate({
+          order,
+          customer: `${firstName} ${lastName}`,
+          adminEmail: process.env.ADMIN_EMAIL,
+        }),
+      });
 
       res.status(201).json(newOrder);
       // }
@@ -103,8 +119,6 @@ const updateOrderStatusController = async (req, res) => {
 const downloadOrderReportController = async (req, res) => {
   try {
     const orders = await Order.find().sort({ updatedAt: -1 }).populate("user");
-
-    console.log(orders);
 
     // Create the HTML content for the PDF
     const html = `

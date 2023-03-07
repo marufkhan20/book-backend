@@ -1,6 +1,7 @@
 const {
   registerController,
   loginController,
+  verifyAccountController,
 } = require("../controllers/authController");
 
 const router = require("express").Router();
@@ -10,5 +11,8 @@ router.post("/register", registerController);
 
 // login user
 router.post("/login", loginController);
+
+// verify account
+router.patch("/verify-account/:id", verifyAccountController);
 
 module.exports = router;

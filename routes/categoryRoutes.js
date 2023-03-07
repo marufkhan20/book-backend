@@ -8,7 +8,7 @@ const {
 const checkAdminAuth = require("../middlewares/adminAuthMiddleware");
 
 // get all categories
-router.get("/", checkAdminAuth, getAllCategoriesController);
+router.get("/", getAllCategoriesController);
 
 // create a new category
 router.post("/", checkAdminAuth, createNewCategoryController);

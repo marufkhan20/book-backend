@@ -10,6 +10,7 @@ const {
   bookRoutes,
   orderRoutes,
   userRoutes,
+  paymentRoutes,
 } = require("./routes");
 
 const app = express();
@@ -27,6 +28,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/payments", paymentRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "welcome" });

@@ -8,6 +8,11 @@ const bookSchema = new Schema(
     bookImage: String,
     category: String,
     description: String,
+    featured: Boolean,
+    orders: {
+      type: Schema.Types.ObjectId,
+      ref: "Order",
+    },
   },
   { timestamps: true }
 );
