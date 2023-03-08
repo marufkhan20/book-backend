@@ -94,13 +94,13 @@ const loginController = async (req, res) => {
       });
     }
 
-    if (!user?.verified) {
-      return res.status(400).json({
-        error: {
-          logEmail: "Please verify your account!!",
-        },
-      });
-    }
+    // if (!user?.verified) {
+    //   return res.status(400).json({
+    //     error: {
+    //       logEmail: "Please verify your account!!",
+    //     },
+    //   });
+    // }
 
     // prepare the user object to generate token
     const userObject = {
